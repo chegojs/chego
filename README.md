@@ -332,7 +332,7 @@ Whether you find a bug or have a feature request, please contact us. With your h
 
 Follow our kanban boards to be up to date
 
-[Kanban boards](https://github.com/orgs/chegojs/chego/TODO.md)
+[Kanban boards](https://github.com/chegojs/chego/blob/master/TODO.md)
 
 Join the team, feel free to catch any task or suggest a new one.
 
