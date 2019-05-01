@@ -1,6 +1,6 @@
 import { IQuery, IQueryScheme, QuerySyntaxEnum, IQueryNot, IQueryEqualTo, IQueryLike, IQueryGT, IQueryLT, IQueryBetween, IQueryWhere, IQueryWrapped, IQueryNull, IQueryOrder, IQueryLimit, IQueryAnd, IQueryOr, Fn, IQueryAndWhere, IQueryOrWhere, IQueryLeftJoin, IQueryRightJoin, IQueryJoin, IQueryFullJoin, IQueryTo, IQueryGroupBy, IQueryIs, IQueryAre, IQuerySet, IQueryFrom, StringOrProperty, IQueryWhereExists, IQueryUnion, IQuerySelect, QueryBuildFunction, IQueryOn, CommandProp } from '@chego/chego-api';
-import { isQueryScheme, newQueryScheme } from './queryScheme';
-import { isFunction } from '@chego/chego-tools';
+import { newQueryScheme } from './queryScheme';
+import { isFunction, isQueryScheme } from '@chego/chego-tools';
 
 const containsQueryScheme = (obj: any): obj is IQuery =>
     isQueryScheme((<IQuery>obj).scheme);

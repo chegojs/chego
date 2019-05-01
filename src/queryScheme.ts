@@ -33,11 +33,6 @@ const parseJoinOnParams = (tableName:string, property:StringOrProperty) => {
     return [property];
 }
 
-export const isQueryScheme = (obj:any) :obj is IQueryScheme => 
-    obj
-    && (<IQueryScheme>obj).add !== undefined 
-    && (<IQueryScheme>obj).toArray !== undefined;
-
 export const newQueryScheme = ():IQueryScheme => {
     const pSchemeArr:IQuerySchemeArray = [];
     return {
