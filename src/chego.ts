@@ -1,6 +1,6 @@
 import { Fn, IChego, IQuery, IDatabaseDriver } from '@chego/chego-api';
 
-export const Chego = (driver:Fn, config:object):IChego => {
+export const newChego = (driver:Fn, config:object):IChego => {
     const dbDriver:IDatabaseDriver = driver();
     dbDriver.initialize(config);
 

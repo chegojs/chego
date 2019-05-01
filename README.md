@@ -68,6 +68,14 @@ where('foo', and('bar', or('baz'))).are.eq('cool')
 ```
 
 #### Logical operators
+Write queries the way you want.
+```
+// query with logical operator
+query.select('*').from('comics').where('writer').is.eq('Stan Lee', or('Bob Kane'));
+
+// query without logical operator
+query.select('*').from('comics').where('writer').is.eq('Stan Lee').or.is.eq('Bob Kane');
+```
 Use logical operators to simplify your queries.
 ```
 // query with logical operator
@@ -110,9 +118,12 @@ query.select('alterEgo AS knownAs').from('superheroes');
 Although using *"alias expression"* is less efficient because in the end it is parsed to `alias` property.
 
 #### Wrapping query parts
-`Chego` API contains a specific` wrapped() `clause. You can use it to place selected parts of the query in parentheses. It has been implemented for complex conditions.
+`Chego` API contains a specific `wrapped()` clause. You can use it to place selected parts of the query in parentheses. It has been implemented for complex conditions.
 ```
-query.select('name').from('superheroes').where('origin').is.equalTo('New York City').and.wrapped((query) => query.where('teamAffiliation').is.equalTo("Avengers").or.where('teamAffiliation').is.equalTo('Defenders')).limit(10)
+query.select('name').from('superheroes').where('origin').is.equalTo('New York City').and.wrapped(
+    (query) => query.where('teamAffiliation').is.equalTo("Avengers")
+    .or.where('teamAffiliation').is.equalTo('Defenders')
+).limit(10)
 
 // conditions formula
 // (origin === 'New York City' && (teamAffiliation === 'Avengers' || teamAffiliation === 'Defenders'))
@@ -295,7 +306,10 @@ query.insert({
 
 ### Nested queries
 ```
-query.select('*').from('superheroes').where('publisher').is.eq((query) => { query.select('id').from('publishers').where('name').is.eq('Marvel Comics') }).limit(100);
+query.select('*').from('superheroes').where('publisher').is.eq(
+    (query) => query.select('id').from('publishers')
+    .where('name').is.eq('Marvel Comics')
+).limit(100);
 ```
 
 ### Joining queries

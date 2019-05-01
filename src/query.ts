@@ -10,11 +10,17 @@ export const newQuery = (): IQuery => {
     const add = (type: QuerySyntaxEnum, ...args: any[]): void => {
         const arg0 = args.length && args[0];
         if (isFunction(arg0)) {
-            const temp = pScheme;
-            pScheme = newQueryScheme();
-            arg0(query);
-            temp.add(type, pScheme);
-            pScheme = temp;
+            if (type === QuerySyntaxEnum.WrapInParentheses) {
+                pScheme.add(QuerySyntaxEnum.OpenParentheses);
+                arg0(query);
+                pScheme.add(QuerySyntaxEnum.CloseParentheses);
+            } else {
+                const temp = pScheme;
+                pScheme = newQueryScheme();
+                arg0(query);
+                temp.add(type, pScheme);
+                pScheme = temp;
+            }
         } else if (containsQueryScheme(arg0)) {
             pScheme.add(type, arg0.scheme);
         } else {
@@ -26,6 +32,7 @@ export const newQuery = (): IQuery => {
             return pScheme;
         },
         get or(): IQueryNot & IQueryEqualTo & IQueryLike & IQueryGT & IQueryLT & IQueryBetween & IQueryWhere & IQueryWrapped {
+            add(QuerySyntaxEnum.Or);
             return query;
         },
         get not(): IQueryEqualTo & IQueryLike & IQueryGT & IQueryLT & IQueryBetween & IQueryNull {

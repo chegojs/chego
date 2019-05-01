@@ -76,11 +76,11 @@ export const pow = (key: StringOrProperty, exponent: number, alias?: string): Fu
 const ifStringThenParseToProperty = (keys: PropertyOrLogicalOperatorScope[], key: any): PropertyOrLogicalOperatorScope[] =>
     keys.concat((typeof key === 'string') ? parseStringToProperty(key) : key);
 
-export const or = (...properties: AnyButFunction[]) => {
+export const or = (...properties: AnyButFunction[]): LogicalOperatorScope => {
     const list:PropertyOrLogicalOperatorScope[] = (<PropertyOrLogicalOperatorScope[]>properties).reduce(ifStringThenParseToProperty, [])
     return newLogicalOperatorScope(QuerySyntaxEnum.Or, list);
 }
-export const and = (...properties: AnyButFunction[]) => {
+export const and = (...properties: AnyButFunction[]): LogicalOperatorScope => {
     const list:PropertyOrLogicalOperatorScope[] = (<PropertyOrLogicalOperatorScope[]>properties).reduce(ifStringThenParseToProperty, [])
     return newLogicalOperatorScope(QuerySyntaxEnum.And, list);
 }
