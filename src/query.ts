@@ -1,4 +1,4 @@
-import { IQuery, IQueryScheme, QuerySyntaxEnum, IQueryNot, IQueryEqualTo, IQueryLike, IQueryGT, IQueryLT, IQueryBetween, IQueryWhere, IQueryWrapped, IQueryNull, IQueryOrder, IQueryLimit, IQueryAnd, IQueryOr, Fn, IQueryAndWhere, IQueryOrWhere, IQueryLeftJoin, IQueryRightJoin, IQueryJoin, IQueryFullJoin, IQueryTo, IQueryGroupBy, IQueryIs, IQueryAre, IQuerySet, IQueryFrom, StringOrProperty, CommandProp, IQueryWhereExists, IQueryUnion, IQuerySelect, QueryBuildFunction, IQueryOn } from '@chego/chego-api';
+import { IQuery, IQueryScheme, QuerySyntaxEnum, IQueryNot, IQueryEqualTo, IQueryLike, IQueryGT, IQueryLT, IQueryBetween, IQueryWhere, IQueryWrapped, IQueryNull, IQueryOrder, IQueryLimit, IQueryAnd, IQueryOr, Fn, IQueryAndWhere, IQueryOrWhere, IQueryLeftJoin, IQueryRightJoin, IQueryJoin, IQueryFullJoin, IQueryTo, IQueryGroupBy, IQueryIs, IQueryAre, IQuerySet, IQueryFrom, StringOrProperty, IQueryWhereExists, IQueryUnion, IQuerySelect, QueryBuildFunction, IQueryOn, CommandProp } from '@chego/chego-api';
 import { isQueryScheme, newQueryScheme } from './queryScheme';
 import { isFunction } from '@chego/chego-tools';
 
@@ -91,24 +91,24 @@ export const newQuery = (): IQuery => {
             add(QuerySyntaxEnum.OrderBy, ...values);
             return query;
         },
-        lt(value: CommandProp<IQuery>): IQueryOrder & IQueryLimit & IQueryAnd & IQueryOr {
-            add(QuerySyntaxEnum.LT, value);
+        lt(...values: CommandProp[]): IQueryOrder & IQueryLimit & IQueryAnd & IQueryOr {
+            add(QuerySyntaxEnum.LT, ...values);
             return query;
         },
         limit(offsetOrCount: number, count?: number): IQueryWhere & IQueryOrder {
             add(QuerySyntaxEnum.Limit, offsetOrCount, count);
             return query;
         },
-        like(value: CommandProp<IQuery>): IQueryOrder & IQueryLimit & IQueryAnd & IQueryOr {
-            add(QuerySyntaxEnum.Like, value);
+        like(...values: CommandProp[]): IQueryOrder & IQueryLimit & IQueryAnd & IQueryOr {
+            add(QuerySyntaxEnum.Like, ...values);
             return query;
         },
-        gt(value: CommandProp<IQuery>): IQueryOrder & IQueryLimit & IQueryAnd & IQueryOr {
-            add(QuerySyntaxEnum.GT, value);
+        gt(...values: CommandProp[]): IQueryOrder & IQueryLimit & IQueryAnd & IQueryOr {
+            add(QuerySyntaxEnum.GT, ...values);
             return query;
         },
-        eq(value: CommandProp<IQuery>): IQueryOrder & IQueryLimit & IQueryAnd & IQueryOr {
-            add(QuerySyntaxEnum.EQ, value);
+        eq(...values: CommandProp[]): IQueryOrder & IQueryLimit & IQueryAnd & IQueryOr {
+            add(QuerySyntaxEnum.EQ, ...values);
             return query;
         },
         between(min: number, max: number): IQueryOrder & IQueryLimit & IQueryAnd & IQueryOr {
