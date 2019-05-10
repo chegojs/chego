@@ -16,8 +16,8 @@ Usage is very simple once you decide which type of database you want to use, jus
 ```
 //with firebase
 const { newChego, newQuery } = require("@chego/chego");
-const { firebaseDriver } = require("@chego/chego-firebase");
-const chego = newChego(firebaseDriver,{ ...firebase config... });
+const { chegoFirebase } = require("@chego/chego-firebase");
+const chego = newChego(chegoFirebase ,{ ...firebase config... });
 const query = newQuery();
 
 query.select('*').from('superheroes','villains').where('origin').is.eq('Gotham City').limit(10);
@@ -271,13 +271,9 @@ query.select('title', 'nr).from('comics').orderBy('published DESC');
 ```
 query.update('superheroes').set({superPowers:[]}).where('name').is.eq('Punisher');
 ```
-### Removing entire rows
+### Removing rows
 ```
 query.delete().from('villains').where('origin').is.not.eq('Gotham City');
-```
-### Removing row contents
-```
-query.delete('alterEgo').from('villains').where('origin').is.eq('New York City');
 ```
 ### Inserting data
 ```

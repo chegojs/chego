@@ -5,8 +5,8 @@ export const newChego = (driver:Fn, config:object):IChego => {
     dbDriver.initialize(config);
 
     return {
-        async execute(query:IQuery): Promise<any> {
-            return dbDriver.execute(query);
+        async execute(...queries:IQuery[]): Promise<any> {
+            return dbDriver.execute(queries);
         }
     }
 }
