@@ -7,6 +7,12 @@ export const newChego = (driver:Fn, config:object):IChego => {
     return {
         async execute(...queries:IQuery[]): Promise<any> {
             return dbDriver.execute(queries);
+        },
+        connect(callback?: Fn): void {
+            dbDriver.connect(callback);
+        },
+        disconnect(callback?: Fn): void {
+            dbDriver.disconnect(callback);
         }
     }
 }

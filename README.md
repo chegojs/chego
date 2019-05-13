@@ -18,13 +18,19 @@ Usage is very simple once you decide which type of database you want to use, jus
 const { newChego, newQuery } = require("@chego/chego");
 const { chegoFirebase } = require("@chego/chego-firebase");
 const chego = newChego(chegoFirebase ,{ ...firebase config... });
-const query = newQuery();
+const query = newQuery().select('*').from('superheroes','villains').where('origin').is.eq('Gotham City').limit(10);
 
-query.select('*').from('superheroes','villains').where('origin').is.eq('Gotham City').limit(10);
+chego.connect();
 
 chego.execute(query)
-.then(result => { console.log('RESULT:', JSON.stringify(result)) })
-.catch(error => { console.log('ERROR:', error); });
+.then(result => { 
+    console.log('RESULT:', JSON.stringify(result));
+    chego.disconnect();
+})
+.catch(error => { 
+    console.log('ERROR:', error);
+    chego.disconnect();
+});
 
 ```
 
@@ -133,7 +139,9 @@ query.select('name').from('superheroes').where('origin').is.equalTo('New York Ci
 ## API
 
 #### `IChego`
-`execute(query: IQuery): Promise<any>` - uses defined database driver to parse and execute given query scheme. It returns `Promise` with query results `object` or `Error`.
+`execute(...queries: IQuery[]): Promise<any>` - uses defined database driver to parse and execute given queries. It returns `Promise` with query results `object` or `Error`.
+`connect(callback?:Fn): void` - establishes a connection. Additionally, you can specify a custom callback which will be triggered when the connection is established.
+`disconnect(callback?:Fn): void` - terminates a connection. Additionally, you can specify a custom callback that will be triggered when the connection is closed.
 
 #### `IQuery`
 It extends `IQueryMethods` to provide fluent interface for builder. More details can be found [here](https://github.com/chegojs/chego-api/blob/master/src/interfaces.ts#L9).
