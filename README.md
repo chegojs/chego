@@ -162,7 +162,7 @@ chego.execute(query1, query2)
     console.log('ERROR:', error); 
     chego.disconnect();
 });
-
+```
 
 
 ## API
