@@ -10,6 +10,7 @@ const parsers = new Map<QuerySyntaxEnum, (value:string, index:number)=>Property 
     [QuerySyntaxEnum.Select, (value:string) => parseStringToProperty(value)],
     [QuerySyntaxEnum.Delete, (value:string) => parseStringToProperty(value)],
     [QuerySyntaxEnum.Where, (value:string) => parseStringToProperty(value)],
+    [QuerySyntaxEnum.Having, (value:string) => parseStringToProperty(value)],
 ]);
 
 
