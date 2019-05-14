@@ -4,6 +4,8 @@ Chego is a lightweight Javascript library written in TypeScript.
 The goal of this project is to provide tools to create an easy-to-use, portable, and readable code of database application. 
 All the magic is just using one of the defined database drivers and its config. The rest of the code is independent of the selected database type.
 
+Currently supports: [MySQL](https://github.com/chegojs/chego-mysql), [Firebase](https://github.com/chegojs/chego-firebase)
+
 ## Install
 ```
 npm install --save @chego/chego
@@ -14,10 +16,12 @@ npm install --save @chego/chego
 Usage is very simple once you decide which type of database you want to use, just pass it to `newChego()` function with its config and voila! You can create queries with `newQuery` and execute them using `chego` object.
 
 ```
-//with firebase
 const { newChego, newQuery } = require("@chego/chego");
-const { chegoFirebase } = require("@chego/chego-firebase");
-const chego = newChego(chegoFirebase ,{ ...firebase config... });
+const { <databaseDriver> } = require("@chego/chego-<database>");
+
+const chego = newChego(<databaseDriver> ,{ 
+    ...database config... 
+});
 const query = newQuery().select('*').from('superheroes','villains').where('origin').is.eq('Gotham City').limit(10);
 
 chego.connect();
@@ -43,11 +47,9 @@ select('*').from('superheroes'); // selects all columns/properties
 select('name', 'origin').from('superheroes'); // selects only 'name' and 'origin'
 ```
 #### Selecting from multiple tables
-It is possible to define more tables in `from` clause, simply add each after the comma.
 ```
 select().from('superheroes','villains') ...
 ``` 
-This will perform basic `JOIN`
 
 #### Using `table.key` pattern
 If you are referring to different tables in your query - in non MySQL database. It's better to use the `table.key` patteny then. This will save time and trouble, as any property without a defined table, will be filled with the first table defined in the `from` clause - in the further stage of processing the query.
@@ -135,12 +137,41 @@ query.select('name').from('superheroes').where('origin').is.equalTo('New York Ci
 // (origin === 'New York City' && (teamAffiliation === 'Avengers' || teamAffiliation === 'Defenders'))
 ```
 
+#### Running multiple queries in one call
+You can pass a set of queries and execute them synchronously in one call, but will return results only from the last query. For this reason, you should not combine the `SELECT` query set. This function has been designed to run `transactions` in` chego-mysql`. In `firebase` it is only synchronized calls without the possibility of rollback in case of failure of one of the queries.
+```
+const query1 = newQuery().insert({
+            name: "Thanos",
+            alterEgo: "",
+            origin: "Titan",
+            publisher: "mcUT642",
+            createdBy: [
+                "jsTR612"
+            ],
+            firstAppearance: "tiIM771"
+        }).to('villains');
+        
+const query2 = newQuery().select('*').from('villains').limit(10);
+
+chego.execute(query1, query2)
+.then(result => { 
+    console.log('RESULT:', JSON.stringify(result));
+    chego.disconnect();
+})
+.catch(error => { 
+    console.log('ERROR:', error); 
+    chego.disconnect();
+});
+
+
 
 ## API
 
 #### `IChego`
 `execute(...queries: IQuery[]): Promise<any>` - uses defined database driver to parse and execute given queries. It returns `Promise` with query results `object` or `Error`.
+
 `connect(callback?:Fn): void` - establishes a connection. Additionally, you can specify a custom callback which will be triggered when the connection is established.
+
 `disconnect(callback?:Fn): void` - terminates a connection. Additionally, you can specify a custom callback that will be triggered when the connection is closed.
 
 #### `IQuery`
@@ -336,7 +367,7 @@ Whether you find a bug or have a feature request, please contact us. With your h
 
 Follow our kanban boards to be up to date
 
-[Kanban boards](https://github.com/chegojs/chego/blob/master/TODO.md)
+[Kanban boards](https://github.com/orgs/chegojs/projects/1)
 
 Join the team, feel free to catch any task or suggest a new one.
 
