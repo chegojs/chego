@@ -2,10 +2,10 @@ import { IQuery, IQueryScheme, QuerySyntaxEnum, IQueryNot, IQueryEqualTo, IQuery
     IQueryBetween, IQueryWhere, IQueryWrapped, IQueryNull, IQueryLimit, IQueryAnd, IQueryOr, Fn, 
     IQueryAndWhere, IQueryOrWhere, IQueryLeftJoin, IQueryRightJoin, IQueryJoin, IQueryFullJoin, 
     IQueryTo, IQueryGroupBy, IQueryIs, IQueryAre, IQuerySet, IQueryFrom, StringOrProperty, IQueryUnion, 
-    IQuerySelect, QueryBuildFunction, IQueryOn, CommandProp, IQueryUsing, 
-    IQueryHaving, IQueryIn, IQueryExists, IQueryOrderBy, AnyButFunction, IQueryWhereNot, IQueryHavingAndLite, 
+    QueryBuildFunction, IQueryOn, CommandProp, IQueryUsing, 
+    IQueryHaving, IQueryIn, IQueryExists, IQueryOrderBy, IQueryWhereNot, IQueryHavingAndLite, 
     IQueryHavingOrLite, IQueryHavingEqualTo, IQueryHavingLT, IQueryHavingGT, IQueryHavingBetween, 
-    IQueryHavingNot, IQueryHavingNull, IQueryHavingWrapped } from '@chego/chego-api';
+    IQueryHavingNot, IQueryHavingNull, IQueryHavingWrapped, IQueryWhereIs, IQueryWhereAre } from '@chego/chego-api';
 import { newQueryScheme } from './queryScheme';
 import { isFunction, isQueryScheme } from '@chego/chego-tools';
 
@@ -79,7 +79,7 @@ export const newQuery = (): IQuery => {
             add(QuerySyntaxEnum.Insert, ...args);
             return query;
         },
-        where(...values: any[]): IQueryIs & IQueryAre & IQueryAndWhere & IQueryOrWhere & IQueryGroupBy & IQueryWhereNot & IQueryIn & IQueryExists {
+        where(...values: any[]): IQueryWhereIs & IQueryWhereAre & IQueryAndWhere & IQueryOrWhere & IQueryWhereNot & IQueryExists {
             add(QuerySyntaxEnum.Where, ...values);
             return query;
         },
@@ -123,12 +123,16 @@ export const newQuery = (): IQuery => {
             add(QuerySyntaxEnum.Between, min, max);
             return query;
         },
-        from(...tables: string[]): IQueryGroupBy & IQueryUnion & IQueryLeftJoin & IQueryRightJoin & IQueryJoin & IQueryFullJoin & IQueryOrderBy & IQueryWhere & IQueryLimit & IQueryWrapped {
+        from(...tables: CommandProp[]): IQueryGroupBy & IQueryUnion & IQueryLeftJoin & IQueryRightJoin & IQueryJoin & IQueryFullJoin & IQueryOrderBy & IQueryWhere & IQueryLimit & IQueryWrapped {
             add(QuerySyntaxEnum.From, ...tables);
             return query;
         },
-        union(all: boolean): IQuerySelect {
-            add(QuerySyntaxEnum.Union, all);
+        union(...fns:Fn[]):IQueryGroupBy & IQueryOrderBy & IQueryLimit {
+            add(QuerySyntaxEnum.Union, ...fns);
+            return query;
+        },
+        unionAll(...fns:Fn[]):IQueryGroupBy & IQueryOrderBy & IQueryLimit {
+            add(QuerySyntaxEnum.UnionAll, ...fns);
             return query;
         },
         wrapped(fn: QueryBuildFunction<IQuery>): IQueryGroupBy & IQueryOrderBy & IQueryLimit & IQueryAnd & IQueryOr {
