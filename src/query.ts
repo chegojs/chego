@@ -3,7 +3,9 @@ import { IQuery, IQueryScheme, QuerySyntaxEnum, IQueryNot, IQueryEqualTo, IQuery
     IQueryAndWhere, IQueryOrWhere, IQueryLeftJoin, IQueryRightJoin, IQueryJoin, IQueryFullJoin, 
     IQueryTo, IQueryGroupBy, IQueryIs, IQueryAre, IQuerySet, IQueryFrom, StringOrProperty, IQueryUnion, 
     IQuerySelect, QueryBuildFunction, IQueryOn, CommandProp, IQueryUsing, 
-    IQueryHaving, IQueryIn, IQueryExists, IQueryOrderBy, AnyButFunction, IQueryWhereNot } from '@chego/chego-api';
+    IQueryHaving, IQueryIn, IQueryExists, IQueryOrderBy, AnyButFunction, IQueryWhereNot, IQueryHavingAndLite, 
+    IQueryHavingOrLite, IQueryHavingEqualTo, IQueryHavingLT, IQueryHavingGT, IQueryHavingBetween, 
+    IQueryHavingNot, IQueryHavingNull, IQueryHavingWrapped } from '@chego/chego-api';
 import { newQueryScheme } from './queryScheme';
 import { isFunction, isQueryScheme } from '@chego/chego-tools';
 
@@ -161,11 +163,11 @@ export const newQuery = (): IQuery => {
             add(QuerySyntaxEnum.GroupBy, ...values);
             return query;
         },
-        having(...values: CommandProp[]): IQueryGroupBy & IQueryOrderBy & IQueryLimit {
+        having(...values: CommandProp[]): IQueryHavingAndLite & IQueryHavingOrLite & IQueryHavingEqualTo & IQueryHavingLT & IQueryHavingGT & IQueryHavingBetween & IQueryHavingNot & IQueryHavingNull & IQueryHavingWrapped {
             add(QuerySyntaxEnum.Having, ...values);
             return query;
         },
-        in(...values:AnyButFunction[]): IQueryOrderBy & IQueryGroupBy & IQueryLimit & IQueryAndWhere & IQueryOrWhere {
+        in(...values:CommandProp[]): IQueryOrderBy & IQueryGroupBy & IQueryLimit & IQueryAndWhere & IQueryOrWhere {
             add(QuerySyntaxEnum.In, ...values);
             return query;
         }
