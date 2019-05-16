@@ -433,13 +433,16 @@ query.select('*').from('superheroes').where('publisher').is.eq(
 #### Joining queries
 ```
 // join
-query.select('*').from('comics').join('publishers','id').on('comics', 'publisher').limit(10);
+query.select('*').from('comics').join('publishers').on('publishers.id', 'comics.publisher').limit(10);
 // left join
-query.select('*').from('comics').leftJoin('publishers','id').on('comics', 'publisher').limit(10);
+query.select('*').from('comics').leftJoin('publishers').on('publishers.id', 'comics.publisher').limit(10);
 // right join
-query.select('*').from('comics').rightJoin('publishers','id').on('comics', 'publisher').limit(10);
+query.select('*').from('comics').rightJoin('publishers').on('publishers.id', 'comics.publisher').limit(10);
 // full join
-query.select('*').from('comics').fullJoin('publishers','id').on('comics', 'publisher').limit(10);
+query.select('*').from('comics').fullJoin('publishers').on('publishers.id', 'comics.publisher').limit(10);
+
+// using
+query.select('*').from('superheroes').join('villains').using('id').limit(10);
 ```
 #### Like
 ```

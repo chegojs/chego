@@ -1,9 +1,9 @@
 import { IQuery, IQueryScheme, QuerySyntaxEnum, IQueryNot, IQueryEqualTo, IQueryLike, IQueryGT, IQueryLT, 
     IQueryBetween, IQueryWhere, IQueryWrapped, IQueryNull, IQueryLimit, IQueryAnd, IQueryOr, Fn, 
     IQueryAndWhere, IQueryOrWhere, IQueryLeftJoin, IQueryRightJoin, IQueryJoin, IQueryFullJoin, 
-    IQueryTo, IQueryGroupBy, IQueryIs, IQueryAre, IQuerySet, IQueryFrom, StringOrProperty, IQueryUnion, 
+    IQueryTo, IQueryGroupBy, IQuerySet, IQueryFrom, StringOrProperty, IQueryUnion, 
     QueryBuildFunction, IQueryOn, CommandProp, IQueryUsing, 
-    IQueryHaving, IQueryIn, IQueryExists, IQueryOrderBy, IQueryWhereNot, IQueryHavingAndLite, 
+    IQueryHaving, IQueryExists, IQueryOrderBy, IQueryWhereNot, IQueryHavingAndLite, 
     IQueryHavingOrLite, IQueryHavingEqualTo, IQueryHavingLT, IQueryHavingGT, IQueryHavingBetween, 
     IQueryHavingNot, IQueryHavingNull, IQueryHavingWrapped, IQueryWhereIs, IQueryWhereAre } from '@chego/chego-api';
 import { newQueryScheme } from './queryScheme';
@@ -139,28 +139,28 @@ export const newQuery = (): IQuery => {
             add(QuerySyntaxEnum.WrapInParentheses, fn);
             return query;
         },
-        on(table: string, key: string): IQueryLeftJoin & IQueryRightJoin & IQueryJoin & IQueryFullJoin & IQueryOrderBy & IQueryWhere & IQueryLimit & IQueryWrapped {
-            add(QuerySyntaxEnum.On, table, key);
+        on(keyA: string, keyB: string): IQueryLeftJoin & IQueryRightJoin & IQueryJoin & IQueryFullJoin & IQueryOrderBy & IQueryWhere & IQueryLimit & IQueryWrapped {
+            add(QuerySyntaxEnum.On, keyA, keyB);
             return query;
         },
         using(key: string): IQueryLeftJoin & IQueryRightJoin & IQueryJoin & IQueryFullJoin & IQueryOrderBy & IQueryWhere & IQueryLimit & IQueryWrapped {
             add(QuerySyntaxEnum.Using, key);
             return query;
         },
-        leftJoin(table: string, key: string): IQueryOn & IQueryUsing {
-            add(QuerySyntaxEnum.LeftJoin, table, key);
+        leftJoin(table: string): IQueryOn & IQueryUsing {
+            add(QuerySyntaxEnum.LeftJoin, table);
             return query;
         },
-        rightJoin(table: string, key: string): IQueryOn & IQueryUsing {
-            add(QuerySyntaxEnum.RightJoin, table, key);
+        rightJoin(table: string): IQueryOn & IQueryUsing {
+            add(QuerySyntaxEnum.RightJoin, table);
             return query;
         },
-        join(table: string, key: string): IQueryOn & IQueryUsing {
-            add(QuerySyntaxEnum.Join, table, key);
+        join(table: string): IQueryOn & IQueryUsing {
+            add(QuerySyntaxEnum.Join, table);
             return query;
         },
-        fullJoin(table: string, key: string): IQueryOn & IQueryUsing {
-            add(QuerySyntaxEnum.FullJoin, table, key);
+        fullJoin(table: string): IQueryOn & IQueryUsing {
+            add(QuerySyntaxEnum.FullJoin, table);
             return query;
         },
         groupBy(...values: StringOrProperty[]): IQueryOrderBy & IQueryLimit & IQueryHaving {
