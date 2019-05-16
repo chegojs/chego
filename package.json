@@ -1,6 +1,6 @@
 {
   "name": "@chego/chego",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Chego core module",
   "main": "lib/index.js",
   "files": [
@@ -40,7 +40,7 @@
     "typescript": "^3.4.3"
   },
   "dependencies": {
-    "@chego/chego-api": "^1.2.0",
-    "@chego/chego-tools": "^1.1.1"
+    "@chego/chego-api": "^1.2.3",
+    "@chego/chego-tools": "^1.1.4"
   }
 }

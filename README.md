@@ -6,6 +6,61 @@ All the magic is just using one of the defined database drivers and its config. 
 
 Currently supports: [MySQL](https://github.com/chegojs/chego-mysql), [Firebase](https://github.com/chegojs/chego-firebase)
 
+## Table of contents
+
+* [Install](##install)
+* [Usage](##usage)
+* [Tips](##tips)
+    * [Choosing columns/properties](####choosing-columns/properties)
+    * [Selecting from multiple tables](####Selecting-from-multiple-tables)
+    * [Using `table.key` pattern](####Using-table.key-pattern)
+    * [Multiple properties in `where` clause](####Multiple-properties-in-where-clause)
+    * [Nesting `LogicalOperatorScope` objects](####Nesting-LogicalOperatorScope-objects)
+    * [Logical operators](####Logical-operators)
+    * [Grouping results](####Grouping-results)
+    * [Sorting results](####Sorting-results)
+    * [Alias expression](####Alias-expression)
+    * [Wrapping query parts](####Wrapping-query-parts)
+    * [Testing subqueries with `Exists` operator](####Testing-subqueries-with-Exists-operator)
+    * [Setting filter condition for groups of rows with `Having` clause](####Setting-filter-condition-for-groups-of-rows-with-Having-clause)
+    * [Unions](####unions)
+    * [Checking if specified value matches any value with `In` operator](####Checking-if-specified-value-matches-any-value-with-In-operator)
+    * [Testing values with `Like` operator](####Testing-values-with-Like-operator)
+* [API](##api)
+    * [`IChego`](####ichego)
+    * [`IQuery`](####iquery)
+* [Primary functions](##primary-functions)
+    * [`newChego(driver:Fn, config:object): IChego`](####newChego(driver:Fn,-config:object)-:IChego)
+    * [`newQuery(): IQuery`](####newQuery():-IQuery)
+* [Helpers](##helpers)
+    * [`rowId(alias: string = 'id'): Property`](####rowId(alias:-string-=-'id'):-Property)
+    * [`alias(name: string, alias: string): Property`](####alias(name:-string,-alias:-string):-Property)
+    * [`and/or(...properties: AnyButFunction[]): LogicalOperatorScope`](####and/or(...properties:-AnyButFunction[]):-LogicalOperatorScope)
+* [MySQL comparison, aggregate and math functions](##mysql-comparison,-aggregate-and-math-functions)
+    * [`greatest(keys: StringOrProperty[], alias?: string): FunctionData`](####greatest(keys:-StringOrProperty[],-alias?:-string):-FunctionData)
+    * [`least(keys: StringOrProperty[], alias?: string): FunctionData`](####least(keys:-StringOrProperty[],-alias?:-string):-FunctionData)
+    * [`coalesce(keys: StringOrProperty[], alias?: string): FunctionData`](####coalesce(keys:-StringOrProperty[],-alias?:-string):-FunctionData)
+    * [`count(key: StringOrProperty, alias?: string): FunctionData`](####count(key:-StringOrProperty,-alias?:-string):-FunctionData)
+    * [`max(key: StringOrProperty, alias?: string): FunctionData`](####max(key:-StringOrProperty,-alias?:-string):-FunctionData)
+    * [`min(key: StringOrProperty, alias?: string): FunctionData`](####min(key:-StringOrProperty,-alias?:-string):-FunctionData)
+    * [`sum(key: StringOrProperty, alias?: string): FunctionData`](####sum(key:-StringOrProperty,-alias?:-string):-FunctionData)
+    * [`avg(key: StringOrProperty, alias?: string): FunctionData`](####avg(key:-StringOrProperty,-alias?:-string):-FunctionData)
+    * [`sqrt(key: StringOrProperty, alias?: string): FunctionData`](####sqrt(key:-StringOrProperty,-alias?:-string):-FunctionData)
+    * [`pow(key: StringOrProperty, exponent: number, alias?: string): FunctionData`](####pow(key:-StringOrProperty,-exponent:-number,-alias?:-string):-FunctionData)
+* [Examples](##examples)
+    * [Selecting data](####Selecting-data)
+    * [Updating data](####Updating-data)
+    * [Removing rows](####Removing-rows)
+    * [Inserting data](####Inserting-data)
+    * [Joining queries](####Joining-queries)
+    * [Like](####Like)
+    * [Unions](####Unions)
+    * [In](####In)
+    * [Having](####Having)
+    * [Exists](####Exists)
+* [Contribute](##Contribute)
+* [License](##License)
+
 ## Install
 ```
 npm install --save @chego/chego
@@ -163,7 +218,35 @@ chego.execute(query1, query2)
     chego.disconnect();
 });
 ```
+#### Testing subqueries with `Exists` operator
 
+The *MySQL EXISTS* operator is a Boolean operator that returns either true or false. The *EXISTS* operator is often used the in a subquery to test for an *exist* condition.
+    
+More information about *MySQL EXISTS* operator can be found [here](http://www.mysqltutorial.org/mysql-exists/)
+
+#### Setting filter condition for groups of rows with `Having` clause
+
+The `having` clause is often used with the `groupBy` clause to filter groups based on a specified condition. More information about *MySQL HAVING* clause can be found [here](http://www.mysqltutorial.org/mysql-having.aspx). In `chego`, `having` clause is available only as a succession of the `groupBy` clause.
+
+#### Unions
+
+Known from *MySQL UNION* operator allows you to combine two or more result sets of queries into a single result set. `Chego` API contains two union methods: 
+* `union`: which imitates *MySQLs* `UNION DISTINCT` default `UNION`
+* `unionAll`: which imitates *MySQLs* `UNION ALL`
+
+More information about *MySQL UNION* operator can be found [here](http://www.mysqltutorial.org/sql-union-mysql.aspx)
+
+#### Checking if specified value matches any value with `In` operator
+
+The *MySQL IN*  operator allows you to determine if a specified value matches any value in a set of values or returned by a subquery. More information about *MySQL IN* operator can be found [here](http://www.mysqltutorial.org/sql-in.aspx)
+
+#### Testing values with `Like` operator
+
+The *MySQL LIKE* operator is a logical operator that tests whether a string contains a specified pattern or not. MySQL provides two wildcard characters for constructing patterns: percentage `%` and underscore `_`.
+* The percentage ( % ) wildcard matches any string of zero or more characters.
+* The underscore ( _ ) wildcard matches any single character.
+
+More information about *MySQL LIKE* operator can be found [here](http://www.mysqltutorial.org/mysql-like/)
 
 ## API
 
@@ -214,7 +297,7 @@ where('foo', or('bar')).is.eq(1)
 `and()`, `or()` can be used in the `where` clause and within the conditions: `eq`, `lt` and` gt`.
 
 
-### MySQL Comparison, Aggregate and Math Functions
+## MySQL Comparison, Aggregate and Math Functions
 
 In Chego you can use some of the functions known from MySQL.
 
@@ -302,19 +385,19 @@ select(pow(['points'],5)) ...
 
 ## Examples
 
-### Selecting data
+#### Selecting data
 ```
 query.select('title', 'nr).from('comics').orderBy('published DESC');
 ```
-### Updating data
+#### Updating data
 ```
 query.update('superheroes').set({superPowers:[]}).where('name').is.eq('Punisher');
 ```
-### Removing rows
+#### Removing rows
 ```
 query.delete().from('villains').where('origin').is.not.eq('Gotham City');
 ```
-### Inserting data
+#### Inserting data
 ```
 query.insert({
     name: "Batman",
@@ -339,7 +422,7 @@ query.insert({
 }).to('superheroes');
 ```
 
-### Nested queries
+#### Nested queries
 ```
 query.select('*').from('superheroes').where('publisher').is.eq(
     (query) => query.select('id').from('publishers')
@@ -347,7 +430,7 @@ query.select('*').from('superheroes').where('publisher').is.eq(
 ).limit(100);
 ```
 
-### Joining queries
+#### Joining queries
 ```
 // join
 query.select('*').from('comics').join('publishers','id').on('comics', 'publisher').limit(10);
@@ -357,6 +440,55 @@ query.select('*').from('comics').leftJoin('publishers','id').on('comics', 'publi
 query.select('*').from('comics').rightJoin('publishers','id').on('comics', 'publisher').limit(10);
 // full join
 query.select('*').from('comics').fullJoin('publishers','id').on('comics', 'publisher').limit(10);
+```
+#### Like
+```
+// like
+query.select('*').from('superheroes').where('name').is.like('%man'); // Batman, Superman ...
+query.select('*').from('superheroes').where('name').is.like('Iron%'); // Ironman, Iron fist ...
+query.select('*').from('superheroes').where('name').is.like('Hu__'); // Hulk
+query.select('*').from('superheroes').where('name').is.like('S%n'); // Spiderman, Superman ...
+
+// not like
+query.select('*').from('superheroes').where('name').is.not.like('%man'); // Batman, Superman ...
+```
+
+#### Unions
+```
+// union - distinct
+query.select('name').from('superheroes').union((q)=>q.select('name).from('villains'));
+// union - all
+query.select('name').from('superheroes').unionAll((q)=>q.select('name).from('villains'));
+```
+
+#### In
+```
+// in
+query.select('*').from('publishers').where('country').is.in('US');
+// not in
+query.select('*').from('publishers').where('country').is.not.in('US');
+```
+
+#### Having
+```
+// having
+query.select('*').from('superheroes').groupBy('origin').having('superpowers').like('%flying%');
+// not having
+query.select('*').from('superheroes').groupBy('origin').having('superpowers').not.like('%flying%');
+```
+
+#### Exists
+```
+// exists
+query.select('*').from('superheroes').where('publisher').exists(
+    (query) => query.select('id').from('publishers')
+    .where('name').is.eq('Marvel Comics')
+);
+// not exists
+query.select('*').from('superheroes').where('publisher').not.exists(
+    (query) => query.select('id').from('publishers')
+    .where('name').is.eq('Marvel Comics')
+);
 ```
 
 ## Contribute
