@@ -30,23 +30,23 @@ Currently supports: [MySQL](https://github.com/chegojs/chego-mysql), [Firebase](
     * [`IChego`](#ichego)
     * [`IQuery`](#iquery)
 * [Primary functions](#primary-functions)
-    * [`newChego(driver:Fn, config:object): IChego`](#newChego(driver:Fn,-config:object)-:IChego)
-    * [`newQuery(): IQuery`](#newQuery():-IQuery)
+    * [`newChego`](#newChego)
+    * [`newQuery`](#newQuery)
 * [Helpers](#helpers)
-    * [`rowId(alias: string = 'id'): Property`](#rowId(alias:-string-=-'id'):-Property)
-    * [`alias(name: string, alias: string): Property`](#alias(name:-string,-alias:-string):-Property)
-    * [`and/or(...properties: AnyButFunction[]): LogicalOperatorScope`](#and/or(...properties:-AnyButFunction[]):-LogicalOperatorScope)
+    * [`rowId`](#rowId)
+    * [`alias`](#alias)
+    * [`and/or`](#and/or)
 * [MySQL comparison, aggregate and math functions](#mysql-comparison,-aggregate-and-math-functions)
-    * [`greatest(keys: StringOrProperty[], alias?: string): FunctionData`](#greatest(keys:-StringOrProperty[],-alias?:-string):-FunctionData)
-    * [`least(keys: StringOrProperty[], alias?: string): FunctionData`](#least(keys:-StringOrProperty[],-alias?:-string):-FunctionData)
-    * [`coalesce(keys: StringOrProperty[], alias?: string): FunctionData`](#coalesce(keys:-StringOrProperty[],-alias?:-string):-FunctionData)
-    * [`count(key: StringOrProperty, alias?: string): FunctionData`](#count(key:-StringOrProperty,-alias?:-string):-FunctionData)
-    * [`max(key: StringOrProperty, alias?: string): FunctionData`](#max(key:-StringOrProperty,-alias?:-string):-FunctionData)
-    * [`min(key: StringOrProperty, alias?: string): FunctionData`](#min(key:-StringOrProperty,-alias?:-string):-FunctionData)
-    * [`sum(key: StringOrProperty, alias?: string): FunctionData`](#sum(key:-StringOrProperty,-alias?:-string):-FunctionData)
-    * [`avg(key: StringOrProperty, alias?: string): FunctionData`](#avg(key:-StringOrProperty,-alias?:-string):-FunctionData)
-    * [`sqrt(key: StringOrProperty, alias?: string): FunctionData`](#sqrt(key:-StringOrProperty,-alias?:-string):-FunctionData)
-    * [`pow(key: StringOrProperty, exponent: number, alias?: string): FunctionData`](#pow(key:-StringOrProperty,-exponent:-number,-alias?:-string):-FunctionData)
+    * [`greatest`](#greatest)
+    * [`least`](#least)
+    * [`coalesce`](#coalesce)
+    * [`count`](#count)
+    * [`max`](#max)
+    * [`min`](#min)
+    * [`sum`](#sum)
+    * [`avg`](#avg)
+    * [`sqrt`](#sqrt)
+    * [`pow`](#pow)
 * [Examples](#examples)
     * [Selecting data](#Selecting-data)
     * [Updating data](#Updating-data)
@@ -264,29 +264,44 @@ It extends `IQueryMethods` to provide fluent interface for builder. More details
 
 ## Primary functions
 
-#### `newChego(driver:Fn, config:object): IChego`
+#### `newChego`
+```
+newChego(driver:Fn, config:object): IChego
+```
 Initializes database driver and returns new `Chego` object.
 
-#### `newQuery(): IQuery`
+#### `newQuery`
+```
+newQuery(): IQuery
+```
 Returns new query scheme builder.
 
 ## Helpers
 
-#### `rowId(alias: string = 'id'): Property`
+#### `rowId`
+```
+rowId(alias: string = 'id'): Property
+```
 It is used to get primary key - if it is not included in the row scheme as in NoSQL data stores.
 
 ```
 query.select('*').from('superheroes').where('publisher').is.eq((query) => { query.select(rowId()).from('publishers').where('name').is.eq('Marvel Comics') });
 ```
 
-#### `alias(name: string, alias: string): Property`
+#### `alias`
+```
+alias(name: string, alias: string): Property
+```
 It is used to give the property a temporary name.
 
 ```
 query.select(alias('alterEgo', 'knownAs')).from('superheroes');
 ```
 
-#### `and/or(...properties: AnyButFunction[]): LogicalOperatorScope`
+#### `and/or`
+```
+and/or(...properties: AnyButFunction[]): LogicalOperatorScope
+```
 Creates new logical operator scope, which means that all given properties will be set in an "scope" array. In the further stage of processing the query, this array is parsed - with given values - to conditional expression.
 ```
 where('foo', or('bar')).is.eq(1)
@@ -301,83 +316,93 @@ where('foo', or('bar')).is.eq(1)
 
 In Chego you can use some of the functions known from MySQL.
 
-#### `greatest(keys: StringOrProperty[], alias?: string): FunctionData`
+#### `greatest`
 With two or more arguments, returns the maximum-valued argument. 
 
 Default alias is `GREATEST()`
 ```
+// greatest(keys: StringOrProperty[], alias?: string): FunctionData
 select(greatest([1,3,5,88,2])) ...
 ```
 
-#### `least(keys: StringOrProperty[], alias?: string): FunctionData`
+#### `least`
 Returns the smallest value of the list of given arguments.
 
 Default alias is `LEAST()`
 ```
+// least(keys: StringOrProperty[], alias?: string): FunctionData
 select(least([1,2,3,4,5,6)) ...
 ```
 
-#### `coalesce(keys: StringOrProperty[], alias?: string): FunctionData`
+#### `coalesce`
 Returns the first non-NULL argument. In case all arguments are NULL, the COALESCE function returns NULL.
 
 Default alias is `COALESCE()`
 ```
+// coalesce(keys: StringOrProperty[], alias?: string): FunctionData
 select(coalesce(['foo','bar'])) ...
 ```
 
-#### `count(key: StringOrProperty, alias?: string): FunctionData`
+#### `count`
 Returns the number of rows in a table.
 
 Default alias is `COUNT()`
 ```
+// count(key: StringOrProperty, alias?: string): FunctionData
 select(count(['publishers'])) ...
 ```
 
-#### `max(key: StringOrProperty, alias?: string): FunctionData`
+#### `max`
 Returns the maximum value in a set of values.
 
 Default alias is `MAX()`
 ```
+// max(key: StringOrProperty, alias?: string): FunctionData
 select(max(['points'])) ...
 ```
 
-#### `min(key: StringOrProperty, alias?: string): FunctionData`
+#### `min`
 Returns the minimum value in a set of values.
 
 Default alias is `MIN()`
 ```
+// min(key: StringOrProperty, alias?: string): FunctionData
 select(min(['points'])) ...
 ```
 
-#### `sum(key: StringOrProperty, alias?: string): FunctionData`
+#### `sum`
 Returns the sum of a set of values.
 
 Default alias is `SUM()`
 ```
+// sum(key: StringOrProperty, alias?: string): FunctionData
 select(sum(['points'])) ...
 ```
 
-#### `avg(key: StringOrProperty, alias?: string): FunctionData`
+#### `avg`
 Returns the average value of a set of values
 
 Default alias is `AVG()`
 ```
+// avg(key: StringOrProperty, alias?: string): FunctionData
 select(avg(['points'])) ...
 ```
 
-#### `sqrt(key: StringOrProperty, alias?: string): FunctionData`
+#### `sqrt`
 Returns the square root of value
 
 Default alias is `SQRT()`
 ```
+// sqrt(key: StringOrProperty, alias?: string): FunctionData
 select(sqrt(['points'])) ...
 ```
 
-#### `pow(key: StringOrProperty, exponent: number, alias?: string): FunctionData`
+#### `pow`
 Returns the argument raised to the specified power.
 
 Default alias is `POW()`
 ```
+// pow(key: StringOrProperty, exponent: number, alias?: string): FunctionData
 select(pow(['points'],5)) ...
 ```
 
