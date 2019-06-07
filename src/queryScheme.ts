@@ -1,7 +1,6 @@
 
 import { parseStringToTable, parseStringToProperty, clone } from '@chego/chego-tools';
-import { QuerySyntaxEnum, Property, Table, IQueryScheme, IQuerySchemeArray, QuerySchemeEntry } from '@chego/chego-api';
-import { newQuerySchemeElement } from './querySchemeElement';
+import { QuerySyntaxEnum, Property, Table, IQueryScheme, IQuerySchemeArray, QuerySchemeEntry, IQuerySchemeElement } from '@chego/chego-api';
 
 const parsers = new Map<QuerySyntaxEnum, (value: string, index: number) => Property | Table>([
     [QuerySyntaxEnum.From, (value: string) => parseStringToTable(value)],
@@ -26,6 +25,12 @@ const parseStringIfRequired = (parser: Parser) => (keys: any[], data: any, i: nu
         (typeof data === 'string' && parser)
             ? parser(data, i)
             : data), keys);
+
+const newQuerySchemeElement = (index: number, type: QuerySyntaxEnum, params?: any[]): IQuerySchemeElement => ({
+    index,
+    type,
+    params
+});
 
 export const newQueryScheme = (): IQueryScheme => {
     const pSchemeArr: IQuerySchemeArray = [];

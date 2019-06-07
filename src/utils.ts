@@ -1,17 +1,9 @@
-import { parseStringToProperty, newProperty, isTableDotKeyString, newTable, newLogicalOperatorScope } from '@chego/chego-tools';
+import { parseStringToProperty, newProperty, newTable, newLogicalOperatorScope } from '@chego/chego-tools';
 import {StringOrProperty, FunctionData, Property, QuerySyntaxEnum, PropertyOrLogicalOperatorScope, LogicalOperatorScope, AnyButFunction} from '@chego/chego-api';
 
-export const rowId = (alias: string = 'id'): Property => {
-    const property: Property = newProperty({ type: QuerySyntaxEnum.RowId });
-    if (isTableDotKeyString(alias)) {
-        const data: string[] = alias.split('.');
-        property.table = newTable(data[0]);
-        property.alias = data[1];
-    } else {
-        property.alias = alias;
-    }
-    return property;
-}
+export const rowId = (table?:string, alias?: string): Property => 
+    newProperty({ type: QuerySyntaxEnum.RowId, table: table ? newTable(table) : null, alias: alias || 'id' });
+
 export const alias = (name: string, alias: string): Property => {
     const property: Property = parseStringToProperty(name);
     property.alias = alias;

@@ -1,18 +1,12 @@
 import { Fn, IChego, IQuery, IDatabaseDriver } from '@chego/chego-api';
 
-export const newChego = (driver:Fn, config:object):IChego => {
+export const newChego = (driver:Fn<any>, config:object):IChego => {
     const dbDriver:IDatabaseDriver = driver();
     dbDriver.initialize(config);
 
     return {
-        async execute(...queries:IQuery[]): Promise<any> {
-            return dbDriver.execute(queries);
-        },
-        connect(callback?: Fn): void {
-            dbDriver.connect(callback);
-        },
-        disconnect(callback?: Fn): void {
-            dbDriver.disconnect(callback);
-        }
+        execute: async (...queries:IQuery[]): Promise<any> => dbDriver.execute(queries),
+        connect:(): Promise<any> => dbDriver.connect(),
+        disconnect:(): Promise<any> => dbDriver.disconnect()
     }
 }

@@ -4,7 +4,7 @@ Chego is a lightweight Javascript library written in TypeScript.
 The goal of this project is to provide tools to create an easy-to-use, portable, and readable code of database application. 
 All the magic is just using one of the defined database drivers and its config. The rest of the code is independent of the selected database type.
 
-Currently supports: [MySQL](https://github.com/chegojs/chego-mysql), [Firebase](https://github.com/chegojs/chego-firebase)
+Currently supports: [MySQL](https://github.com/chegojs/chego-mysql), [Firebase](https://github.com/chegojs/chego-firebase), [MongoDB](https://github.com/chegojs/chego-mongodb)
 
 ## Table of contents
 
@@ -15,6 +15,7 @@ Currently supports: [MySQL](https://github.com/chegojs/chego-mysql), [Firebase](
     * [Selecting from multiple tables](#Selecting-from-multiple-tables)
     * [Using `table.key` pattern](#Using-table.key-pattern)
     * [Multiple properties in `where` clause](#Multiple-properties-in-where-clause)
+    * [Use `and()` and `or()` helpers](#use-and()-and-or()-helpers)
     * [Nesting `LogicalOperatorScope` objects](#Nesting-LogicalOperatorScope-objects)
     * [Logical operators](#Logical-operators)
     * [Grouping results](#Grouping-results)
@@ -79,7 +80,7 @@ const chego = newChego(<databaseDriver> ,{
 });
 const query = newQuery().select('*').from('superheroes','villains').where('origin').is.eq('Gotham City').limit(10);
 
-chego.connect();
+await chego.connect();
 
 chego.execute(query)
 .then(result => { 
@@ -115,17 +116,25 @@ select().from('superheroes','villains').where('superheroes.name')
 ```
 
 #### Multiple properties in `where` clause
-By default all none `LogicalOperatorScope` properties are wrapped with `and()` in `where` clause. It has been designed this way because it seems to be a natural behavior.
+By default all properties in `where` clause are wrapped with `and()`.
 ```
-where('name', 'foo', 'bar', or('baz')) 
+where('name', 'foo', 'bar')
 // will become in the further stage of processing the query
-where('name', and('foo'), and('bar'), or('baz'))
+where(and('name', 'foo', 'bar'))
+```
+
+#### Use `and()` and `or()` helpers
+With `and()` and `or()` helpers you can sinplify your queries
+```
+where(or('foo','bar')).are.eq(1) === where('foo').or.where('bar').are.eq(1)
+
+where(and('foo','bar')).are.eq(or(1,2)) === where('foo').and.where('bar').are.eq(1).or.eq(2)
 ```
 
 #### Nesting `LogicalOperatorScope` objects
 It is possible to create `LogicalOperatorScope` objects inside another `LogicalOperatorScope` object, which allows you to use more complex conditions.
 ```
-where('foo', and('bar', or('baz'))).are.eq('cool')
+where(and('foo', or('bar','baz'))).are.eq('cool')
 // will be parsed to
 (foo === 'cool' && (bar === 'cool' || baz === 'cool'))
 ```
@@ -181,9 +190,9 @@ query.select('alterEgo AS knownAs').from('superheroes');
 Although using *"alias expression"* is less efficient because in the end it is parsed to `alias` property.
 
 #### Wrapping query parts
-`Chego` API contains a specific `wrapped()` clause. You can use it to place selected parts of the query in parentheses. It has been implemented for complex conditions.
+`Chego` API contains a specific `inParentheses()` clause. You can use it to place selected parts of the query in parentheses. It has been implemented for complex conditions.
 ```
-query.select('name').from('superheroes').where('origin').is.equalTo('New York City').and.wrapped(
+query.select('name').from('superheroes').where('origin').is.equalTo('New York City').and.inParentheses(
     (query) => query.where('teamAffiliation').is.equalTo("Avengers")
     .or.where('teamAffiliation').is.equalTo('Defenders')
 ).limit(10)
@@ -195,6 +204,7 @@ query.select('name').from('superheroes').where('origin').is.equalTo('New York Ci
 #### Running multiple queries in one call
 You can pass a set of queries and execute them synchronously in one call, but will return results only from the last query. For this reason, you should not combine the `SELECT` query set. This function has been designed to run `transactions` in` chego-mysql`. In `firebase` it is only synchronized calls without the possibility of rollback in case of failure of one of the queries.
 ```
+...
 const query1 = newQuery().insert({
             name: "Thanos",
             alterEgo: "",
@@ -210,12 +220,10 @@ const query2 = newQuery().select('*').from('villains').limit(10);
 
 chego.execute(query1, query2)
 .then(result => { 
-    console.log('RESULT:', JSON.stringify(result));
-    chego.disconnect();
+   ...
 })
 .catch(error => { 
-    console.log('ERROR:', error); 
-    chego.disconnect();
+    ...
 });
 ```
 #### Testing subqueries with `Exists` operator
@@ -251,11 +259,11 @@ More information about *MySQL LIKE* operator can be found [here](http://www.mysq
 ## API
 
 #### `IChego`
-`execute(...queries: IQuery[]): Promise<any>` - uses defined database driver to parse and execute given queries. It returns `Promise` with query results `object` or `Error`.
+`execute(...queries: IQuery[]): Promise<any>` - uses defined database driver to parse and execute given queries. It returns `Promise` with query results or `Error`.
 
-`connect(callback?:Fn): void` - establishes a connection. Additionally, you can specify a custom callback which will be triggered when the connection is established.
+`connect(): Promise<any>` - establishes a connection.
 
-`disconnect(callback?:Fn): void` - terminates a connection. Additionally, you can specify a custom callback that will be triggered when the connection is closed.
+`disconnect(): Promise<any>` - terminates a connection.
 
 #### `IQuery`
 It extends `IQueryMethods` to provide fluent interface for builder. More details can be found [here](https://github.com/chegojs/chego-api/blob/master/src/interfaces.ts#L9).
@@ -280,9 +288,15 @@ Returns new query scheme builder.
 
 #### `rowId`
 ```
-rowId(alias: string = 'id'): Property
+rowId(table?:string, alias?: string): Property
 ```
-It is used to get primary key - if it is not included in the row scheme as in NoSQL data stores.
+Some NoSQL data stores do not contain a primary key inside records. With `rowId` you can get the record key and attach it to the schema. You can also search / filter records by primary key.
+
+The default value for the argument `alias` is `'id'`
+
+The default `table` is the first table used in clause `to()`, `update()` or `from()`. You will need to define `table`, if you want to use a primary keys from different tables in your query.
+
+In the `on()` clause, rowId has a default value for the table argument, which is valid for `keyA` or `keyB`.
 
 ```
 query.select('*').from('superheroes').where('publisher').is.eq((query) => { query.select(rowId()).from('publishers').where('name').is.eq('Marvel Comics') });
@@ -304,7 +318,7 @@ and/or(...properties: AnyButFunction[]): LogicalOperatorScope
 ```
 Creates new logical operator scope, which means that all given properties will be set in an "scope" array. In the further stage of processing the query, this array is parsed - with given values - to conditional expression.
 ```
-where('foo', or('bar')).is.eq(1)
+where(or('foo', 'bar')).is.eq(1)
 // will be parsed to
 (foo === 1 || bar === 1)
 ```
