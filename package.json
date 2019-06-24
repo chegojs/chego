@@ -1,6 +1,6 @@
 {
   "name": "@chego/chego",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Chego core module",
   "main": "lib/index.js",
   "files": [
