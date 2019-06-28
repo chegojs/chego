@@ -4,7 +4,12 @@ Chego is a lightweight Javascript library written in TypeScript.
 The goal of this project is to provide tools to create an easy-to-use, portable, and readable code of database application. 
 All the magic is just using one of the defined database drivers and its config. The rest of the code is independent of the selected database type.
 
-Currently supports: [MySQL](https://github.com/chegojs/chego-mysql), [Firebase](https://github.com/chegojs/chego-firebase), [MongoDB](https://github.com/chegojs/chego-mongodb)
+Check the following database drivers: 
+* [MySQL](https://github.com/chegojs/chego-mysql)
+* [Firebase](https://github.com/chegojs/chego-firebase)
+* [MongoDB](https://github.com/chegojs/chego-mongodb)
+* [PostgreSQL](https://github.com/chegojs/chego-postgresql)
+* [SQLite](https://github.com/chegojs/chego-sqlite)
 
 ## Table of contents
 

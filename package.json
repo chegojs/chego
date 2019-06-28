@@ -46,7 +46,7 @@
     "typescript": "^3.4.3"
   },
   "dependencies": {
-    "@chego/chego-api": "2.1.0",
+    "@chego/chego-api": "2.1.1",
     "@chego/chego-tools": "2.1.0"
   }
 }
