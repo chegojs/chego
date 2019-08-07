@@ -42,6 +42,7 @@ Check the following database drivers:
     * [`rowId`](#rowId)
     * [`alias`](#alias)
     * [`and/or`](#and/or)
+    * [`withCustomId`](#withCustomId)
 * [MySQL functions](#mysql-functions)
 * [Examples](#examples)
     * [Selecting data](#Selecting-data)
@@ -320,6 +321,14 @@ where(or('foo', 'bar')).is.eq(1)
 
 `and()`, `or()` can be used in the `where` clause and within the conditions: `eq`, `lt` and` gt`.
 
+#### `withCustomId`
+```
+withCustomId("custom id", {foo:"bar"}): ItemWithCustomId
+```
+**Currently implemented for Firebase.** Use this if you want to add an entry under the defined id.
+```
+query.insert(withCustomId("Foo", { foo:"bar" })).to('...');
+```
 
 ## MySQL Functions
 

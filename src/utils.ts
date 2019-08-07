@@ -1,5 +1,5 @@
 import { parseStringToProperty, newProperty, newTable, newLogicalOperatorScope } from '@chego/chego-tools';
-import {StringOrProperty, Property, QuerySyntaxEnum, PropertyOrLogicalOperatorScope, LogicalOperatorScope, AnyButFunction} from '@chego/chego-api';
+import {StringOrProperty, Property, QuerySyntaxEnum, PropertyOrLogicalOperatorScope, LogicalOperatorScope, AnyButFunction, ItemWithCustomId} from '@chego/chego-api';
 
 export const rowId = (table?:string, alias?: string): Property => 
     newProperty({ type: QuerySyntaxEnum.RowId, table: table ? newTable(table) : null, alias: alias || 'id' });
@@ -28,3 +28,5 @@ export const and = (...properties: AnyButFunction[]): LogicalOperatorScope => {
     const list:PropertyOrLogicalOperatorScope[] = (<PropertyOrLogicalOperatorScope[]>properties).reduce(ifStringThenParseToProperty, [])
     return newLogicalOperatorScope(QuerySyntaxEnum.And, list);
 }
+
+export const withCustomId = (id:string, item:object):ItemWithCustomId => ({ id, item, type:QuerySyntaxEnum.ItemWithCustomId });
