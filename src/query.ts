@@ -1,39 +1,47 @@
-import { IQuery, IQueryScheme, QuerySyntaxEnum, IQueryNot, IQueryEqualTo, IQueryLike, IQueryGT, IQueryLT, 
-    IQueryBetween, IQueryWhere, IQueryInParentheses, IQueryNull, IQueryLimit, IQueryAnd, IQueryOr, Fn, 
-    IQueryAndWhere, IQueryOrWhere, IQueryLeftJoin, IQueryRightJoin, IQueryJoin, IQueryFullJoin, 
-    IQueryTo, IQueryGroupBy, IQuerySet, IQueryFrom, StringOrProperty, IQueryUnion, 
-    QueryBuildFunction, IQueryOn, CommandProp, IQueryUsing, 
-    IQueryHaving, IQueryExists, IQueryOrderBy, IQueryWhereNot, IQueryHavingAndLite, 
-    IQueryHavingOrLite, IQueryHavingEqualTo, IQueryHavingLT, IQueryHavingGT, IQueryHavingBetween, 
-    IQueryHavingNot, IQueryHavingNull, IQueryHavingInParentheses, IQueryWhereIs, IQueryWhereAre, IQueryUnionAll, IQueryIn } from '@chego/chego-api';
+import {
+    IQuery, IQueryScheme, QuerySyntaxEnum, IQueryNot, IQueryEqualTo, IQueryLike, IQueryGT, IQueryLT,
+    IQueryBetween, IQueryWhere, IQueryInParentheses, IQueryNull, IQueryLimit, IQueryAnd, IQueryOr, Fn,
+    IQueryAndWhere, IQueryOrWhere, IQueryLeftJoin, IQueryRightJoin, IQueryJoin, IQueryFullJoin,
+    IQueryTo, IQueryGroupBy, IQuerySet, IQueryFrom, StringOrProperty, IQueryUnion,
+    QueryBuildFunction, IQueryOn, CommandProp, IQueryUsing,
+    IQueryHaving, IQueryExists, IQueryOrderBy, IQueryWhereNot, IQueryHavingAndLite,
+    IQueryHavingOrLite, IQueryHavingEqualTo, IQueryHavingLT, IQueryHavingGT, IQueryHavingBetween,
+    IQueryHavingNot, IQueryHavingNull, IQueryHavingInParentheses, IQueryWhereIs, IQueryWhereAre, IQueryUnionAll, IQueryIn
+} from '@chego/chego-api';
 import { newQueryScheme } from './queryScheme';
-import { isFunction, isQueryScheme } from '@chego/chego-tools';
+import { isFunction, isQueryScheme, newCustomCondition } from '@chego/chego-tools';
 
 const containsQueryScheme = (obj: any): obj is IQuery =>
     isQueryScheme((<IQuery>obj).scheme);
 
-export const newQuery = (): IQuery => {
-    let pScheme: IQueryScheme = newQueryScheme();
-    const add = (type: QuerySyntaxEnum, ...args: any[]): void => {
-        const arg0 = args.length && args[0];
-        if (isFunction(arg0)) {
-            if (type === QuerySyntaxEnum.WrapInParentheses) {
-                pScheme.add(QuerySyntaxEnum.OpenParentheses);
-                arg0(query);
-                pScheme.add(QuerySyntaxEnum.CloseParentheses);
-            } else {
-                const temp = pScheme;
-                pScheme = newQueryScheme();
-                arg0(query);
-                temp.add(type, pScheme);
-                pScheme = temp;
-            }
-        } else if (containsQueryScheme(arg0)) {
-            pScheme.add(type, arg0.scheme);
+const updateScheme = (scheme: IQueryScheme, type: QuerySyntaxEnum, query: IQuery) => (arg: any) => {
+    if (isFunction(arg)) {
+        if (type === QuerySyntaxEnum.WrapInParentheses) {
+            scheme.add(QuerySyntaxEnum.OpenParentheses);
+            arg(query);
+            scheme.add(QuerySyntaxEnum.CloseParentheses);
+        } else if (type === QuerySyntaxEnum.Where) {
+            scheme.add(type, newCustomCondition(arg, null));
         } else {
-            pScheme.add(type, ...args);
+            const temp = scheme;
+            scheme = newQueryScheme();
+            arg(query);
+            temp.add(type, scheme);
+            scheme = temp;
         }
+    } else if (containsQueryScheme(arg)) {
+        scheme.add(type, arg.scheme);
+    } else {
+        scheme.add(type, arg);
     }
+}
+
+export const newQuery = (): IQuery => {
+    const pScheme: IQueryScheme = newQueryScheme();
+    const add = (type: QuerySyntaxEnum, ...args: any[]): void => {
+        args.forEach(updateScheme(pScheme, type, query));
+    }
+
     const query: IQuery = {
         get scheme(): IQueryScheme {
             return pScheme;
@@ -42,7 +50,7 @@ export const newQuery = (): IQuery => {
             add(QuerySyntaxEnum.Or);
             return query;
         },
-        
+
         get is(): IQueryNot & IQueryEqualTo & IQueryLike & IQueryGT & IQueryLT & IQueryBetween & IQueryNull {
             add(QuerySyntaxEnum.Is);
             return query;
@@ -63,7 +71,7 @@ export const newQuery = (): IQuery => {
             add(QuerySyntaxEnum.Not);
             return query;
         },
-        exists(fn:Fn<IQuery>): IQueryOrderBy & IQueryGroupBy & IQueryLimit & IQueryAndWhere & IQueryOrWhere {
+        exists(fn: Fn<IQuery>): IQueryOrderBy & IQueryGroupBy & IQueryLimit & IQueryAndWhere & IQueryOrWhere {
             add(QuerySyntaxEnum.Exists, fn);
             return query;
         },
@@ -95,7 +103,7 @@ export const newQuery = (): IQuery => {
             add(QuerySyntaxEnum.Delete);
             return query;
         },
-        orderBy(...values: any[]):IQueryGroupBy & IQueryLimit {
+        orderBy(...values: any[]): IQueryGroupBy & IQueryLimit {
             add(QuerySyntaxEnum.OrderBy, ...values);
             return query;
         },
@@ -127,11 +135,11 @@ export const newQuery = (): IQuery => {
             add(QuerySyntaxEnum.From, ...tables);
             return query;
         },
-        union(...fns:Array<Fn<IQuery>>):IQueryGroupBy & IQueryOrderBy & IQueryLimit {
+        union(...fns: Array<Fn<IQuery>>): IQueryGroupBy & IQueryOrderBy & IQueryLimit {
             add(QuerySyntaxEnum.Union, ...fns);
             return query;
         },
-        unionAll(...fns:Array<Fn<IQuery>>):IQueryGroupBy & IQueryOrderBy & IQueryLimit {
+        unionAll(...fns: Array<Fn<IQuery>>): IQueryGroupBy & IQueryOrderBy & IQueryLimit {
             add(QuerySyntaxEnum.UnionAll, ...fns);
             return query;
         },
@@ -171,19 +179,19 @@ export const newQuery = (): IQuery => {
             add(QuerySyntaxEnum.Having, ...values);
             return query;
         },
-        in(...values:CommandProp[]): IQueryOrderBy & IQueryGroupBy & IQueryLimit & IQueryAndWhere & IQueryOrWhere {
+        in(...values: CommandProp[]): IQueryOrderBy & IQueryGroupBy & IQueryLimit & IQueryAndWhere & IQueryOrWhere {
             add(QuerySyntaxEnum.In, ...values);
             return query;
         },
-        intersect(...fns:Array<Fn<IQuery>>) {
+        intersect(...fns: Array<Fn<IQuery>>) {
             add(QuerySyntaxEnum.Intersect, ...fns);
             return query;
         },
-        minus(...fns:Array<Fn<IQuery>>) {
+        minus(...fns: Array<Fn<IQuery>>) {
             add(QuerySyntaxEnum.Minus, ...fns);
             return query;
         },
-        replace(...values:CommandProp[]) {
+        replace(...values: CommandProp[]) {
             add(QuerySyntaxEnum.Replace, ...values);
             return query;
         }
